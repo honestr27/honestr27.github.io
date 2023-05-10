@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Country Flags Sprite</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="css/flags.css" />
+  </head>
+  <body>
+    <h1 id="location"></h1>
+    <script>
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+          var latitude = position.coords.latitude;
+          var longitude = position.coords.longitude;
+          var xmlhttp = new XMLHttpRequest();
+          xmlhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+              var data = JSON.parse(this.responseText);
+              var city = data.city;
+              var country = data.countryCode.toLowerCase(); // Convert to lowercase
+              var flag = ` <img src="img/flag_placeholder.png" class="flag flag-${country}" />`;
+
+              document.getElementById("location").innerHTML =
+                "I am living in " + city + " " + flag;
+            }
+          };
+          xmlhttp.open(
+            "GET",
+            "https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=" +
+              latitude +
+              "&longitude=" +
+              longitude +
+              "&localityLanguage=en",
+            true
+          );
+          xmlhttp.send();
+        });
+      } else {
+        document.getElementById("location").innerHTML =
+          "Geolocation is not supported by this browser.";
+      }
+    </script>
+  </body>
+</html>
